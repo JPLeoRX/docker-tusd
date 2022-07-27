@@ -1,0 +1,11 @@
+docker build -t jpleorx/tusd:latest .
+docker push jpleorx/tusd:latest
+
+
+https://github.com/tus/tusd/blob/master/docs/usage-binary.md
+
+# For docker tests
+docker build -t jpleorx/tusd:latest .
+docker run --name=tusd --rm -ti -p 1080:1080 -v /home/leo/anotheria/streamdust-tus-upload/files:/srv/tusd-data/data -v /home/leo/anotheria/streamdust-tus-upload/hooks:/srv/tusd-hooks tusproject/tusd:latest
+
+docker build -t tusproject/tusd:latest . && docker run --name=tusd --rm -ti -p 1080:1080 --network=host tusproject/tusd:latest
