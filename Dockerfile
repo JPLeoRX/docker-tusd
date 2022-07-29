@@ -46,6 +46,7 @@ RUN pip3 install --no-cache --upgrade pip setuptools
 RUN pip3 install requests
 RUN pip3 install pydantic
 RUN pip3 install simplestr
+RUN pip3 install google-cloud-storage
 
 WORKDIR /srv/tusd-data
 EXPOSE 1080
