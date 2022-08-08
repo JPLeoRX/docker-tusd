@@ -43,10 +43,13 @@ ENV PYTHONUNBUFFERED=1
 RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
-RUN pip3 install requests
+RUN pip3 install requests==2.25.1
+RUN pip3 install injectable==3.4.4
 RUN pip3 install pydantic
-RUN pip3 install simplestr
+RUN pip3 install simplestr==0.5.0
 RUN pip3 install google-cloud-storage
+RUN pip3 install tekleo-common-message-protocol==0.0.0.3
+RUN pip3 install tekleo-common-utils==0.0.1.4
 
 WORKDIR /srv/tusd-data
 EXPOSE 1080
