@@ -1,59 +1,30 @@
-FROM golang:1.17.6-alpine AS builder
-RUN pwd
-WORKDIR /go/src/github.com/tus/tusd
+FROM python:3.8
 
-# Add gcc and libc-dev early so it is cached
-RUN set -xe \
-	&& apk add --no-cache gcc libc-dev
+RUN apt-get update &&\
+  apt-get install -y bash curl tar gzip &&\
+  rm -rf /var/cache/apt/*
+RUN apt-get install ffmpeg libsm6 libxext6 libgl1 bash curl tar gzip -y
 
-# Install dependencies earlier so they are cached between builds
-COPY go.mod go.sum ./
-RUN set -xe \
-	&& go mod download
+RUN \
+  mkdir -p /_ &&\
+  curl -sL https://github.com/tus/tusd/releases/download/v1.9.1/tusd_linux_amd64.tar.gz | tar xzv -C /_ &&\
+  mv /_/tusd_linux_amd64/tusd /bin &&\
+  rm -R /_ &&\
+  chmod +x /bin/tusd
 
-# Copy the source code, because directories are special, there are separate layers
-COPY cmd/ ./cmd/
-COPY internal/ ./internal/
-COPY pkg/ ./pkg/
+RUN mkdir -p /srv/tusd-hooks
+RUN mkdir -p /srv/tusd-data
 
-# Get the version name and git commit as a build argument
-ARG GIT_VERSION
-ARG GIT_COMMIT
+RUN pip install requests==2.25.1
+RUN pip install injectable==3.4.4
+RUN pip install pydantic
+RUN pip install simplestr==0.5.0
+RUN pip install numpy==1.19.4
+RUN pip install opencv-python==4.5.1.48
+RUN pip install pillow-heif==0.6.0
+RUN pip install google-cloud-storage
+RUN pip install tekleo-common-message-protocol==0.0.0.3
+RUN pip install tekleo-common-utils==0.0.1.7
 
-RUN set -xe \
-	&& GOOS=linux GOARCH=amd64 go build \
-        -ldflags="-X github.com/tus/tusd/cmd/tusd/cli.VersionName=${GIT_VERSION} -X github.com/tus/tusd/cmd/tusd/cli.GitCommit=${GIT_COMMIT} -X 'github.com/tus/tusd/cmd/tusd/cli.BuildDate=$(date --utc)'" \
-        -o /go/bin/tusd ./cmd/tusd/main.go
-
-# start a new stage that copies in the binary built in the previous stage
-FROM alpine:3.15.0
-WORKDIR /srv/tusd-data
-
-RUN apk add --no-cache ca-certificates jq \
-    && addgroup -g 1000 tusd \
-    && adduser -u 1000 -G tusd -s /bin/sh -D tusd \
-    && mkdir -p /srv/tusd-hooks \
-    && chown tusd:tusd /srv/tusd-data
-
-COPY --from=builder /go/bin/tusd /usr/local/bin/tusd
-
-# Install python/pip
-WORKDIR /
-ENV PYTHONUNBUFFERED=1
-RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
-RUN python3 -m ensurepip
-RUN pip3 install --no-cache --upgrade pip setuptools
-RUN pip3 install requests==2.25.1
-RUN pip3 install injectable==3.4.4
-RUN pip3 install pydantic
-RUN pip3 install simplestr==0.5.0
-RUN pip3 install google-cloud-storage
-RUN pip3 install tekleo-common-message-protocol==0.0.0.3
-RUN pip3 install tekleo-common-utils==0.0.1.4
-
-WORKDIR /srv/tusd-data
 EXPOSE 1080
-USER tusd
-
-ENTRYPOINT ["tusd"]
-CMD [ "--hooks-dir", "/srv/tusd-hooks", "-behind-proxy"]
+CMD [ "/bin/tusd", "--hooks-dir", "/srv/tusd-hooks", "-behind-proxy"]
