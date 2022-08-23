@@ -24,7 +24,7 @@ RUN pip install opencv-python==4.5.1.48
 RUN pip install pillow-heif==0.6.0
 RUN pip install google-cloud-storage
 RUN pip install tekleo-common-message-protocol==0.0.0.3
-RUN pip install tekleo-common-utils==0.0.1.8
+RUN pip install tekleo-common-utils==0.0.1.9
 
 EXPOSE 1080
 CMD [ "/bin/tusd", "--hooks-dir", "/srv/tusd-hooks", "-behind-proxy"]
