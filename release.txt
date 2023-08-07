@@ -1,11 +1,23 @@
+# Latest
 docker build -t jpleorx/tusd:latest .
+docker run --name=tusd --rm -ti -p 1080:1080 jpleorx/tusd:latest
 docker push jpleorx/tusd:latest
 
+# v1.9.1
+docker build -t jpleorx/tusd:v1.9.1 .
+docker run --name=tusd --rm -ti -p 1080:1080 jpleorx/tusd:v1.9.1
+docker push jpleorx/tusd:v1.9.1
 
+# v1.12.1
+docker build -t jpleorx/tusd:v1.12.1 .
+docker run --name=tusd --rm -ti -p 1080:1080 jpleorx/tusd:v1.12.1
+docker push jpleorx/tusd:v1.12.1
+
+# Local test
+docker run --name=tusd --rm -ti -p 1080:1080 jpleorx/tusd:latest
+
+# Outdated test
 https://github.com/tus/tusd/blob/master/docs/usage-binary.md
-
-# For docker tests
 docker build -t jpleorx/tusd:latest .
 docker run --name=tusd --rm -ti -p 1080:1080 -v /home/leo/anotheria/streamdust-tus-upload/files:/srv/tusd-data/data -v /home/leo/anotheria/streamdust-tus-upload/hooks:/srv/tusd-hooks tusproject/tusd:latest
-
 docker build -t tusproject/tusd:latest . && docker run --name=tusd --rm -ti -p 1080:1080 --network=host tusproject/tusd:latest
