@@ -7,7 +7,7 @@ RUN apt-get install ffmpeg libsm6 libxext6 libgl1 bash curl tar gzip -y
 
 RUN \
   mkdir -p /_ &&\
-  curl -sL https://github.com/tus/tusd/releases/download/v1.9.1/tusd_linux_amd64.tar.gz | tar xzv -C /_ &&\
+  curl -sL https://github.com/tus/tusd/releases/download/v1.12.1/tusd_linux_amd64.tar.gz | tar xzv -C /_ &&\
   mv /_/tusd_linux_amd64/tusd /bin &&\
   rm -R /_ &&\
   chmod +x /bin/tusd
